@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MBTAce-Android.iml" filepath="$PROJECT_DIR$/MBTAce-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../MechMaid/MechMaid.iml" filepath="$PROJECT_DIR$/../MechMaid/MechMaid.iml" />
     </modules>
   </component>
 </project>
