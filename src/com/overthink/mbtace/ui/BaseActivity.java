@@ -1,4 +1,4 @@
-package com.overthink.mbtace;
+package com.overthink.mbtace.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
