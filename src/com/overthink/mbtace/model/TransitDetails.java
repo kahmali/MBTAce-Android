@@ -1,4 +1,4 @@
-package com.overthink.mbtace.ui;
+package com.overthink.mbtace.model;
 
 import com.google.gson.annotations.*;
 
