@@ -17,6 +17,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="MechMaid" />
     <orderEntry type="library" name="google-gson-2.2" level="project" />
+    <orderEntry type="library" name="google-gson-2.2" level="project" />
   </component>
 </module>
 
