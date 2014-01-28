@@ -5,19 +5,19 @@ import java.io.Serializable;
 /**
  * Represents the total duration of this leg of the trip
  */
-public class Duration implements Serializable{
+public class Distance implements Serializable{
     String text;
     int value;
 
     /*
-     * @returns String representation of the duration.
+     * @returns String representation of the distance, displayed in units as used at the origin.
      */
     public String getText() {
         return text;
     }
 
     /*
-     * @returns the duration of this leg of the trip in seconds.
+     * @returns the distance in meters.
      */
     public int getValue() {
         return value;
