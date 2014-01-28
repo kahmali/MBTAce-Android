@@ -6,7 +6,8 @@ import java.io.Serializable;
  * Represents the bounds of the polyline used to set the size of the viewed Map screen
  */
 public class Bounds implements Serializable {
-    private Location northeast,southwest;
+    private Location northeast;
+    private Location southwest;
 
     /*
      * @return Location object for the northeast bound of polyline
