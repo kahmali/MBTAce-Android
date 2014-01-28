@@ -59,7 +59,7 @@ public class Step implements Serializable {
 
     /*
      * @return List of Step objects with directions for walking or driving steps in transit directions.
-      * Substeps are only available when travel_mode is set to "transit".
+     * Substeps are only available when travel_mode is set to "transit".
      */
     public List<Step> getSubSteps() {
         return subSteps;
