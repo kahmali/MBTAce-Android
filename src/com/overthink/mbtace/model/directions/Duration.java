@@ -10,14 +10,14 @@ public class Duration implements Serializable{
     int value;
 
     /*
-     * @returns String representation of the duration.
+     * @return String representation of the duration.
      */
     public String getText() {
         return text;
     }
 
     /*
-     * @returns the duration of this leg of the trip in seconds.
+     * @return the duration of this leg of the trip in seconds.
      */
     public int getValue() {
         return value;

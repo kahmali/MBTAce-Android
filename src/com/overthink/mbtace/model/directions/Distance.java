@@ -10,14 +10,14 @@ public class Distance implements Serializable{
     int value;
 
     /*
-     * @returns String representation of the distance, displayed in units as used at the origin.
+     * @return String representation of the distance, displayed in units as used at the origin.
      */
     public String getText() {
         return text;
     }
 
     /*
-     * @returns the distance in meters.
+     * @return the distance in meters.
      */
     public int getValue() {
         return value;
