@@ -80,7 +80,7 @@ public class TripPlannerFragment extends Fragment {
             StringBuilder builder = new StringBuilder(URL);
             builder.append("origin=" + origin + "&destination=" + destination + "&sensor=false");
             try {
-                webServiceUrl = URLEncoder.encode("http://maps.googleapis.com/maps/api/directions/json?origin=South+Station+Boston&destination=1+S+Point+Drive+Dorchester&sensor=false", UTF8);
+                webServiceUrl = URLEncoder.encode("http://maps.googleapis.com/maps/api/directions/json?origin=San+Francisco+California&destination=1+S+Point+Drive+Dorchester&sensor=false", UTF8);
             } catch (UnsupportedEncodingException e) {
                 Log.e(TAG, "Failed to encode web service URL", e);
             }
@@ -108,7 +108,7 @@ public class TripPlannerFragment extends Fragment {
          */
         @Override
         protected WebServiceResponse doInBackground(Void... v) {
-            return  WebServiceUtils.makeHttpGetRequestWith("http://maps.googleapis.com/maps/api/directions/json?origin=South+Station+Boston&destination=1+S+Point+Drive+Dorchester&sensor=false");
+            return  WebServiceUtils.makeHttpGetRequestWith("http://maps.googleapis.com/maps/api/directions/json?origin=San+Francisco+California&destination=1+S+Point+Drive+Dorchester&sensor=false");
         }
 
 
