@@ -8,18 +8,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.overthink.mbtace.R;
+import com.overthink.mbtace.model.directions.Leg;
+import com.overthink.mbtace.model.directions.Step;
 import com.overthink.mbtace.model.directions.Trip;
 import com.overthink.mechmaid.util.Toaster;
 import com.overthink.mechmaid.webservices.WebServiceResponse;
 import com.overthink.mechmaid.webservices.WebServiceUtils;
+import junit.framework.Test;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Steve on 3/2/14.
@@ -27,11 +34,16 @@ import java.net.URLEncoder;
 public class TripPlannerFragment extends Fragment {
 
     private static final String TAG = TripPlannerFragment.class.getName();
+    private List<Step> steps = new ArrayList<Step>();
+    private ListView listViewTripPlanner;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View tripPlannerLayout = inflater.inflate(R.layout.fragment_trip_planner, container, false);
         new GetRoutesWebCall("South Station Boston", "1 S Point Drive Dorchester", null ,null).execute();
+
+        listViewTripPlanner = (ListView) tripPlannerLayout.findViewById(R.id.trip_planner_list_view);
+
         return tripPlannerLayout;
     }
 
@@ -42,8 +54,14 @@ public class TripPlannerFragment extends Fragment {
      */
     private void loadRouteList(Trip trip){
 
+        //get all Steps from all Legs of route 0 and create a List of Steps
+        List<Leg> legs = trip.getRoutes().get(0).getLegs();
+        for(int i=0; i<legs.size(); i++)
+            steps.addAll(legs.get(i).getSteps());
 
+        TripPlannerAdapter adapter = new TripPlannerAdapter(getActivity(), R.layout.item_list_trip_planner, steps);
 
+        listViewTripPlanner.setAdapter(adapter);
     }
 
     public class GetRoutesWebCall extends AsyncTask<Void, Void, WebServiceResponse> {
