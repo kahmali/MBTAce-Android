@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,11 +22,7 @@ import com.overthink.mbtace.model.directions.Trip;
 import com.overthink.mechmaid.util.Toaster;
 import com.overthink.mechmaid.webservices.WebServiceResponse;
 import com.overthink.mechmaid.webservices.WebServiceUtils;
-import junit.framework.Test;
-import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,23 +34,41 @@ public class TripPlannerFragment extends Fragment {
     private static final String TAG = TripPlannerFragment.class.getName();
     private List<Step> steps = new ArrayList<Step>();
     private ListView listViewTripPlanner;
+    private String startAddress = "Los Angeles, California";
+    private String endAddress = "1 South Point Drive, Boston";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate layout from XML
         View tripPlannerLayout = inflater.inflate(R.layout.fragment_trip_planner, container, false);
-        new GetRoutesWebCall("South Station Boston", "1 S Point Drive Dorchester", null ,null).execute();
 
+        //create references to View objects
         listViewTripPlanner = (ListView) tripPlannerLayout.findViewById(R.id.trip_planner_list_view);
+        final EditText editTextStart = (EditText) tripPlannerLayout.findViewById(R.id.trip_planner_edit_text_start);
+        final EditText editTextEnd = (EditText) tripPlannerLayout.findViewById(R.id.trip_planner_edit_text_end);
+
+        // Setup click event for Search button
+        Button btnSearch = (Button) tripPlannerLayout.findViewById(R.id.trip_planner_btn);
+        btnSearch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //make web call with info from two text boxes
+                Log.d(TAG, "Search Button Pressed");
+                new GetRoutesWebCall(editTextStart.getText().toString(),editTextEnd.getText().toString(), null ,null).execute();
+            }
+        });
+
+        //new GetRoutesWebCall(removeSpaces(startAddress), removeSpaces(endAddress), null ,null).execute();
 
         return tripPlannerLayout;
     }
 
-    /*
-     * Method to convert web response to List of Routes
+    /**
+     * Method to convert Trip from web response to List of Legs
      *
-     * Must take String as param instead of JSONObject due to GSON parameterized restrictions
+     * @param trip to be broken down into a List of Legs
      */
-    private void loadRouteList(Trip trip){
+    private void loadStepList(Trip trip){
 
         //get all Steps from all Legs of route 0 and create a List of Steps
         List<Leg> legs = trip.getRoutes().get(0).getLegs();
@@ -64,26 +80,45 @@ public class TripPlannerFragment extends Fragment {
         listViewTripPlanner.setAdapter(adapter);
     }
 
+    /**
+     * Method to remove spaces (' ') and replaces with plus signs ('+')
+     *
+     * @param string with ' ' to be converted
+     * @return string with ' ' converted to '+'
+     */
+    private String removeSpaces(String string){
+        return string.replace(' ', '+');
+    }
+
     public class GetRoutesWebCall extends AsyncTask<Void, Void, WebServiceResponse> {
 
         // Class name (for debug and more)
         public final String TAG = GetRoutesWebCall.class.getName();
         // Web service URL
         public static final String URL = "http://maps.googleapis.com/maps/api/directions/json?";
+        //String to store final URL after building
         public String webServiceUrl;
         public static final String GOOGLE_API_KEY = "AIzaSyC1WsI7T1FFmM0fMhZ-KEuui4me9BbfhTw";
         public static final String UTF8 = "UTF-8";
         // Progress dialog displayed while awaiting web service response
         ProgressDialog progressDialog;
 
-        public GetRoutesWebCall(String origin, String destination, String arrivalTime, String destinationTime) {
+        public GetRoutesWebCall(String origin, String destination, String arrivalTime, String departureTime) {
+
+            //build up URL from params
             StringBuilder builder = new StringBuilder(URL);
-            builder.append("origin=" + origin + "&destination=" + destination + "&sensor=false");
-            try {
-                webServiceUrl = URLEncoder.encode("http://maps.googleapis.com/maps/api/directions/json?origin=San+Francisco+California&destination=1+S+Point+Drive+Dorchester&sensor=false", UTF8);
-            } catch (UnsupportedEncodingException e) {
-                Log.e(TAG, "Failed to encode web service URL", e);
-            }
+            builder.append("origin=" + removeSpaces(origin));
+            builder.append("&destination=" + removeSpaces(destination));
+            if(arrivalTime != null)
+                builder.append("&arrival_time=" + arrivalTime);
+            if(departureTime != null)
+                builder.append("&departure_time=" + departureTime);
+            builder.append("&sensor=false");
+
+            //TODO: Figure out why web call fails when API key is present
+            //builder.append("&key=" + GOOGLE_API_KEY);
+
+            webServiceUrl = builder.toString();
         }
 
         /**
@@ -108,7 +143,8 @@ public class TripPlannerFragment extends Fragment {
          */
         @Override
         protected WebServiceResponse doInBackground(Void... v) {
-            return  WebServiceUtils.makeHttpGetRequestWith("http://maps.googleapis.com/maps/api/directions/json?origin=San+Francisco+California&destination=1+S+Point+Drive+Dorchester&sensor=false");
+            Log.d(TAG, "Web call made with: " + webServiceUrl);
+            return  WebServiceUtils.makeHttpGetRequestWith(webServiceUrl);
         }
 
 
@@ -143,7 +179,7 @@ public class TripPlannerFragment extends Fragment {
             Log.d(TAG, trip.toString());
 
             //pass Trip to callback method
-            TripPlannerFragment.this.loadRouteList(trip);
+            TripPlannerFragment.this.loadStepList(trip);
         }
     }
 
