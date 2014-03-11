@@ -105,20 +105,22 @@ public class TripPlannerFragment extends Fragment {
 
         public GetRoutesWebCall(String origin, String destination, String arrivalTime, String departureTime) {
 
-            //build up URL from params
-            StringBuilder builder = new StringBuilder(URL);
-            builder.append("origin=" + removeSpaces(origin));
-            builder.append("&destination=" + removeSpaces(destination));
-            if(arrivalTime != null)
-                builder.append("&arrival_time=" + arrivalTime);
-            if(departureTime != null)
-                builder.append("&departure_time=" + departureTime);
-            builder.append("&sensor=false");
+            //ensure text fields were entered and build up URL from params
+            if(origin.isEmpty() != true && destination.isEmpty() != true){
+                StringBuilder builder = new StringBuilder(URL);
+                builder.append("origin=" + removeSpaces(origin));
+                builder.append("&destination=" + removeSpaces(destination));
+                if(arrivalTime != null)
+                    builder.append("&arrival_time=" + arrivalTime);
+                if(departureTime != null)
+                    builder.append("&departure_time=" + departureTime);
+                builder.append("&sensor=false");
 
-            //TODO: Figure out why web call fails when API key is present
-            //builder.append("&key=" + GOOGLE_API_KEY);
+                //TODO: Figure out why web call fails when API key is present
+                //builder.append("&key=" + GOOGLE_API_KEY);
 
-            webServiceUrl = builder.toString();
+                webServiceUrl = builder.toString();
+            }
         }
 
         /**
@@ -129,11 +131,13 @@ public class TripPlannerFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            // Show progress dialog
-            progressDialog = new ProgressDialog(TripPlannerFragment.this.getActivity());
-            progressDialog.setMessage("testing");
-            progressDialog.setIndeterminate(true);
-            progressDialog.show();
+            // Show progress dialog only if URL is built correctly
+            if(webServiceUrl != null) {
+                progressDialog = new ProgressDialog(TripPlannerFragment.this.getActivity());
+                progressDialog.setMessage("testing");
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+            }
         }
 
         /**
@@ -143,6 +147,10 @@ public class TripPlannerFragment extends Fragment {
          */
         @Override
         protected WebServiceResponse doInBackground(Void... v) {
+            //if URL is not built, return null
+            if(webServiceUrl == null)
+                return null;
+
             Log.d(TAG, "Web call made with: " + webServiceUrl);
             return  WebServiceUtils.makeHttpGetRequestWith(webServiceUrl);
         }
@@ -156,6 +164,11 @@ public class TripPlannerFragment extends Fragment {
         @Override
         protected void onPostExecute(WebServiceResponse result) {
             super.onPostExecute(result);
+
+            if(result == null) {
+                Toaster.showToastFromString(TripPlannerFragment.this.getActivity(), "Please enter text in fields");
+                return;
+            }
 
             // Close the progress dialog
             if (progressDialog.isShowing()) {
