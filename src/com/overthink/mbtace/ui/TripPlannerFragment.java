@@ -1,7 +1,9 @@
 package com.overthink.mbtace.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -54,11 +57,17 @@ public class TripPlannerFragment extends Fragment {
             public void onClick(View v) {
                 //make web call with info from two text boxes
                 Log.d(TAG, "Search Button Pressed");
-                new GetRoutesWebCall(editTextStart.getText().toString(),editTextEnd.getText().toString(), null ,null).execute();
+                new GetRoutesWebCall(editTextStart.getText().toString(),editTextEnd.getText().toString(),
+                        null ,null).execute();
+
+                //hide soft keyboard on search button press
+                Activity currentActivity = TripPlannerFragment.this.getActivity();
+                InputMethodManager inputManager = (InputMethodManager) currentActivity
+                        .getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(currentActivity.getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
-
-        //new GetRoutesWebCall(removeSpaces(startAddress), removeSpaces(endAddress), null ,null).execute();
 
         return tripPlannerLayout;
     }
